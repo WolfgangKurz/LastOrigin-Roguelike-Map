@@ -1,0 +1,48 @@
+{
+	"compilerOptions": {
+		"target": "es6",
+		"module": "esnext",
+		"moduleResolution": "node",
+
+		"jsx": "react-jsx",
+		"jsxImportSource": "preact",
+
+		"strict": true,
+		"importHelpers": true,
+
+		"esModuleInterop": true,
+		"resolveJsonModule": true,
+		"experimentalDecorators": true,
+
+		"removeComments": false,
+		"preserveConstEnums": true,
+		"allowSyntheticDefaultImports": true,
+		"downlevelIteration": true,
+		"sourceMap": true,
+
+		"declaration": true,
+		"skipLibCheck": true,
+
+		"baseUrl": "./src",
+		"types": ["node"],
+		"lib": [
+			"es5",
+			"esnext",
+			"dom",
+			"dom.iterable",
+			"scripthost"
+		],
+		"paths": {
+			"@/*": ["./*"]
+		}
+	},
+	"include": [
+		"src/**/*.js",
+		"src/**/*.jsx",
+		"src/**/*.ts",
+		"src/**/*.tsx"
+	],
+	"exclude": [
+		"node_modules"
+	]
+}

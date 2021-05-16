@@ -1,0 +1,179 @@
+table.MapTable {
+	margin: 0 auto;
+	border-collapse: collapse;
+	table-layout: fixed;
+	transform: rotate(-45deg);
+	transform-origin: 50% 50%;
+
+	th {
+		> h3 {
+			margin: 0;
+		}
+
+		> small {
+			display: inline-block;
+			margin-bottom: 1em;
+		}
+	}
+
+	td {
+		position: relative;
+		width: 60px;
+		height: 60px;
+		padding: 0.5em;
+		/* border: 1px solid #222; */
+		background-color: #a3a3a3;
+		word-break: keep-all;
+		font-size: 100%;
+		color: transparent;
+
+		> span {
+			display: inline-block;
+			transform: rotate(45deg);
+			transform-origin: 50% 50%;
+		}
+		&[data-type="grid"] {
+			border: 0;
+			background: transparent;
+			font-weight: bold;
+			font-size: 90%;
+			color: #111;
+		}
+
+		&[data-type="n"] {
+			background-color: transparent;
+			color: transparent;
+		}
+
+		&[data-type="b"] {
+			color: transparent;
+		}
+
+		&[data-type^="s"] {
+			background-color: $primary;
+			color: $light;
+		}
+
+		&::before {
+			content: "";
+			position: absolute;
+			left: 0;
+			top: 0;
+			width: 100%;
+			height: 100%;
+			background-repeat: no-repeat;
+			background-position: center;
+			background-size: contain;
+			transform: rotate(45deg) translate(0, -0.5em);
+			z-index: 3;
+		}
+
+		&[data-type^="q"] {
+			background-color: $success;
+			&::before {
+				background-image: url(/assets/icons/Quest.png);
+			}
+		}
+
+		&[data-type^="m"] {
+			background-color: $danger;
+			&::before {
+				background-image: url(/assets/icons/MOB.png);
+			}
+		}
+
+		&[data-type^="M"] {
+			background-color: $danger;
+			&::before {
+				background-image: url(/assets/icons/BOSSMOB.png);
+			}
+		}
+
+		&[data-type^="t"],
+		&[data-type^="d"],
+		&[data-type^="p"],
+		&[data-type^="f"],
+		&[data-type^="i"],
+		&[data-type^="l"] {
+			background-color: $dark;
+		}
+		&[data-type^="t"]::before {
+			background-image: url(/assets/icons/Trap.png);
+		}
+		&[data-type^="d"]::before {
+			background-image: url(/assets/icons/Debuff.png);
+		}
+		&[data-type^="p"]::before {
+			background-image: url(/assets/icons/Poison.png);
+		}
+		&[data-type^="f"]::before {
+			background-image: url(/assets/icons/FireTrap.png);
+		}
+		&[data-type^="i"]::before {
+			background-image: url(/assets/icons/IceTrap.png);
+		}
+		&[data-type^="l"]::before {
+			background-image: url(/assets/icons/ElectricTrap.png);
+		}
+
+		&[data-type^="B"] {
+			background-color: $success;
+			&::before {
+				background-image: url(/assets/icons/Treasure.png);
+			}
+		}
+
+		&[data-type^="S"] {
+			background-color: $success;
+			&::before {
+				background-image: url(/assets/icons/Shop.png);
+			}
+		}
+
+		&[data-type^="a"] {
+			background-color: $success;
+			&::before {
+				background-image: url(/assets/icons/Actor.png);
+			}
+		}
+
+		&[data-type^="h"],
+		&[data-type^="k"] {
+			background-color: $warning;
+		}
+		&[data-type^="h"]::before {
+			background-image: url(/assets/icons/Thouse.png);
+		}
+		&[data-type^="k"]::before {
+			background-image: url(/assets/icons/FallenKey.png);
+		}
+
+		&[data-type^="o"] {
+			background-color: $primary;
+			&::before {
+				background-image: url(/assets/icons/Observe.png);
+			}
+		}
+
+		&[data-type^="r"] {
+			background-color: $success;
+			&::before {
+				background-image: url(/assets/icons/Recovery.png);
+			}
+		}
+
+		&[data-type^="e"] {
+			background-color: $success;
+			&::before {
+				background-image: url(/assets/icons/Effect.png);
+			}
+		}
+
+		&[data-type^="T"] {
+			background-color: $danger;
+			&::before {
+				background-image: url(/assets/icons/Tracker.png);
+			}
+		}
+	}
+}
