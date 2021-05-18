@@ -43,8 +43,14 @@ const MapList: FunctionalComponent<MapListProps> = (props) => {
 						</div>
 
 						<h3>{ props.floorId }층 - { BuildAlphabetKey(selectedMapIndex.value) }</h3>
-						<div style="margin-top:7em">
-							<MapTable data={ data[selectedMapIndex.value] } />
+						<div style="margin-top:12em">
+							<MapTable
+								data={ data[selectedMapIndex.value] }
+								meta={ [
+									`${props.floorId}층 - ${BuildAlphabetKey(selectedMapIndex.value)}`,
+									`${data[selectedMapIndex.value].size[0]} x ${data[selectedMapIndex.value].size[1]}`,
+								].join("\n") }
+							/>
 						</div>
 					</>;
 				} } />

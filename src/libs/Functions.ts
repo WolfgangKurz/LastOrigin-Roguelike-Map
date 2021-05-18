@@ -27,7 +27,7 @@ export function BuildAlphabetKey (index: number): string {
 	while (index >= alphabetTable.length) {
 		const offset = index % alphabetTable.length;
 		list.push(alphabetTable[offset]);
-		index = Math.floor(index / alphabetTable.length);
+		index = Math.floor(index / alphabetTable.length) - 1;
 	}
 	list.push(alphabetTable[index]);
 	return list.reverse().join("");
