@@ -1,10 +1,15 @@
-import Loader, { GetJson } from "@/components/Loader";
-import MapTable from "@/components/MapTable";
-import { BuildAlphabetKey, SafeInteger } from "@/libs/Functions";
-import { objState } from "@/libs/State";
-import { RogueFloor } from "@/types/Map";
 import { FunctionalComponent } from "preact";
 import { route } from "preact-router";
+
+import { RogueFloor } from "@/types/Map";
+
+import { objState } from "@/libs/State";
+import { BuildAlphabetKey, SafeInteger } from "@/libs/Functions";
+
+import Loader, { GetJson } from "@/components/Loader";
+import MapTable from "@/components/MapTable";
+
+import style from "./style.scss";
 
 interface MapListProps {
 	floorId?: string;
@@ -43,7 +48,16 @@ const MapList: FunctionalComponent<MapListProps> = (props) => {
 						</div>
 
 						<h3>{ props.floorId }층 - { BuildAlphabetKey(selectedMapIndex.value) }</h3>
-						<div style="margin-top:12em">
+						<div class={ style.MapTableWrapper }>
+							<button
+								class="btn btn-secondary"
+								disabled={ selectedMapIndex.value <= 0 }
+								onClick={ (e): void => {
+									e.preventDefault();
+									selectedMapIndex.set(selectedMapIndex.value - 1);
+								} }
+							>◀</button>
+
 							<MapTable
 								data={ data[selectedMapIndex.value] }
 								meta={ [
@@ -51,6 +65,15 @@ const MapList: FunctionalComponent<MapListProps> = (props) => {
 									`${data[selectedMapIndex.value].size[0]} x ${data[selectedMapIndex.value].size[1]}`,
 								].join("\n") }
 							/>
+
+							<button
+								class="btn btn-secondary"
+								disabled={ selectedMapIndex.value >= data.length - 1 }
+								onClick={ (e): void => {
+									e.preventDefault();
+									selectedMapIndex.set(selectedMapIndex.value + 1);
+								} }
+							>▶</button>
 						</div>
 					</>;
 				} } />
