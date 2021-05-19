@@ -21,7 +21,7 @@ export function Extend (): void {
 	}
 }
 
-const alphabetTable = "ABCDEFGHIJKLMNOPQTSTUVWXYZ";
+const alphabetTable = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 export function BuildAlphabetKey (index: number): string {
 	const list: string[] = [];
 	while (index >= alphabetTable.length) {
