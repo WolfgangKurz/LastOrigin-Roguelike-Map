@@ -1,0 +1,76 @@
+$step-circle-size: 2.2em !default;
+
+.Step {
+	display: grid;
+	grid-template-rows: auto;
+	grid-auto-flow: column;
+
+	> .StepLine {
+		margin-top: ($step-circle-size / 2 * 0.8);
+		height: 2px;
+		background: $secondary;
+
+		&.StepError {
+			background: $danger;
+		}
+		&.StepCurrent {
+			background: $primary;
+		}
+		&.StepSuccess {
+			background: $success;
+		}
+	}
+
+	> .StepItem {
+		position: relative;
+		margin-bottom: 1.7em;
+		text-align: center;
+		color: $secondary;
+
+		> .StepText {
+			$width: 5em;
+			position: absolute;
+			margin-top: 0.2em;
+			margin-left: -($width/2);
+			left: 50%;
+			width: $width;
+			white-space: nowrap;
+			text-align: center;
+		}
+
+		> .StepIcon {
+			display: inline-flex;
+			width: $step-circle-size;
+			height: $step-circle-size;
+			border-radius: 999px;
+			font-weight: bold;
+			justify-content: center;
+			align-items: center;
+			font-size: 80%;
+
+			border: 2px solid $secondary;
+		}
+		&.StepSuccess {
+			color: $success;
+			& > .StepIcon {
+				border-color: $success;
+			}
+		}
+		&.StepError {
+			color: $danger;
+			& > .StepIcon {
+				border-color: $danger;
+				background: $danger;
+				color: $light;
+			}
+		}
+		&.StepCurrent {
+			color: $primary;
+			& > .StepIcon {
+				border-color: $primary;
+				background: $primary;
+				color: $light;
+			}
+		}
+	}
+}

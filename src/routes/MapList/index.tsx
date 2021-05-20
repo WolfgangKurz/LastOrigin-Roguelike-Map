@@ -58,13 +58,15 @@ const MapList: FunctionalComponent<MapListProps> = (props) => {
 								} }
 							>◀</button>
 
-							<MapTable
-								data={ data[selectedMapIndex.value] }
-								meta={ [
-									`${props.floorId}층 - ${BuildAlphabetKey(selectedMapIndex.value)}`,
-									`${data[selectedMapIndex.value].size[0]} x ${data[selectedMapIndex.value].size[1]}`,
-								].join("\n") }
-							/>
+							<div class={ style.MapCell }>
+								<MapTable
+									data={ data[selectedMapIndex.value] }
+									meta={ [
+										`${props.floorId}층 - ${BuildAlphabetKey(selectedMapIndex.value)}`,
+										`${data[selectedMapIndex.value].size[0]} x ${data[selectedMapIndex.value].size[1]}`,
+									].join("\n") }
+								/>
+							</div>
 
 							<button
 								class="btn btn-secondary"
@@ -84,12 +86,12 @@ const MapList: FunctionalComponent<MapListProps> = (props) => {
 	return <div class="map-list">
 		<h1>전체 지도 목록</h1>
 
-		<div class="row row-cols-4 row-cols-sm-5">
+		<div class="row row-cols-3 row-cols-sm-4 row-cols-md-5">
 			{ new Array(24)
 				.fill(0)
 				.map((_, i) => <div class="p-3">
 					<button
-						class="btn btn-dark w-100 py-3"
+						class={ `btn btn-${i % 5 === 4 ? "danger" : "dark"} w-100 py-3` }
 						onClick={ (e): void => {
 							e.preventDefault();
 							selectedMapIndex.set(0);

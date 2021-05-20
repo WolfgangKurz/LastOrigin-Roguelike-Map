@@ -7,9 +7,11 @@ import { BuildAlphabetKey } from "@/libs/Functions";
 import style from "./style.scss";
 import { objState } from "@/libs/State";
 
-interface MapTableProps {
+interface SearchTableProps {
+	class?: string;
 	data: RogueMap;
-	meta: string;
+	cursor: [number, number];
+	onClick?: () => void;
 }
 
 interface Color {
@@ -17,70 +19,12 @@ interface Color {
 	text: string;
 }
 
-function ConvertName (cell: string): string {
-	switch (cell) {
-		case "b": return "";
-		case "s":
-			return "시작";
-		default:
-			if (/^q[0-9]$/.test(cell))
-				return ""; // "퀘스트";
-
-			else if (/^m[0-9a-z]$/.test(cell))
-				return ""; // "경비대";
-			else if (/^M[0-9a-z]$/.test(cell))
-				return ""; // "문지기";
-
-			else if (/^B[0-9]$/.test(cell))
-				return ""; // "컨테이너";
-
-			else if (/^f[0-9]$/.test(cell))
-				return ""; // "소이탄 저장고";
-			else if (/^i[0-9]$/.test(cell))
-				return ""; // "냉매 보관소";
-			else if (/^l[0-9]$/.test(cell))
-				return ""; // "고전류 발전 시설";
-
-			else if (/^d[0-9]$/.test(cell))
-				return ""; // "혼돈 엔트로피";
-			else if (/^p[0-9]$/.test(cell))
-				return ""; // "고준위 방사능";
-			else if (/^t[0-9]$/.test(cell))
-				return ""; // "지뢰 지대";
-
-			else if (/^S[0-9a-z]$/.test(cell))
-				return ""; // "상점";
-			else if (/^a[0-9]$/.test(cell))
-				return ""; // "아군";
-			else if (/^k[0-9]$/.test(cell))
-				return ""; // "PECS키";
-			else if (/^h[0-9]$/.test(cell))
-				return ""; // "공기 정화 시설";
-			else if (/^o[0-9]$/.test(cell))
-				return ""; // "관측소";
-			else if (/^r[0-9]$/.test(cell))
-				return ""; // "회복";
-			else if (/^e[0-9]$/.test(cell))
-				return ""; // "군수 공장";
-			else if (/^T[0-9a-z]$/.test(cell))
-				return ""; // "추적자";
-	}
-	return cell;
-}
-
 function DrawGrid (ctx: CanvasRenderingContext2D, w: number, h: number): void {
 	const size = Math.sqrt(Math.pow(60, 2) / 2);
 	const xSize = Math.sqrt(Math.pow(w * 60, 2) / 2);
-	const ySize = Math.sqrt(Math.pow(h * 60, 2) / 2);
 
 	ctx.lineWidth = 1;
 	ctx.strokeStyle = "#b3b3b3";
-
-	ctx.fillStyle = "#000000";
-
-	ctx.font = "18px bold SpoqaHanSans";
-	ctx.textAlign = "center";
-	ctx.textBaseline = "middle";
 
 	ctx.beginPath();
 	for (let x = 0; x <= w; x++) { // ↖ 방향
@@ -89,19 +33,8 @@ function DrawGrid (ctx: CanvasRenderingContext2D, w: number, h: number): void {
 		const x2 = h * size + x * size;
 		const y2 = h * size - x * size;
 
-		ctx.moveTo(size + x1, xSize + y1);
-		ctx.lineTo(size + x2, xSize + y2);
-
-		if (x > 0) {
-			const px = h * size + (x - 1) * size;
-			const py = h * size - (x - 1) * size;
-			ctx.save();
-			ctx.translate(px + size + size, py + xSize);
-			ctx.rotate((-45 * Math.PI / 180));
-			ctx.fillText(x.toString(), 0, 0);
-			ctx.fillText(x.toString(), 1, 0);
-			ctx.restore();
-		}
+		ctx.moveTo(x1, xSize + y1);
+		ctx.lineTo(x2, xSize + y2);
 	}
 	for (let y = 0; y <= h; y++) { // ↗ 방향
 		const x1 = y * size + 0 * size;
@@ -109,19 +42,8 @@ function DrawGrid (ctx: CanvasRenderingContext2D, w: number, h: number): void {
 		const x2 = y * size + w * size;
 		const y2 = y * size - w * size;
 
-		ctx.moveTo(size + x1, xSize + y1);
-		ctx.lineTo(size + x2, xSize + y2);
-
-		if (y > 0) {
-			const px = (y - 1) * size + -1 * size;
-			const py = (y - 1) * size - -1 * size;
-			ctx.save();
-			ctx.translate(px + size + size, py + xSize);
-			ctx.rotate((-45 * Math.PI / 180));
-			ctx.fillText(BuildAlphabetKey(y - 1), 0, 0);
-			ctx.fillText(BuildAlphabetKey(y - 1), 1, 0);
-			ctx.restore();
-		}
+		ctx.moveTo(x1, xSize + y1);
+		ctx.lineTo(x2, xSize + y2);
 	}
 	ctx.stroke();
 }
@@ -130,7 +52,6 @@ function DrawRotatedRectangle (ctx: CanvasRenderingContext2D, cell: string, x: n
 	// 0,0 => 좌측
 	const size = Math.sqrt(Math.pow(60, 2) / 2);
 	const xSize = Math.sqrt(Math.pow(w * 60, 2) / 2);
-	const ySize = Math.sqrt(Math.pow(h * 60, 2) / 2);
 
 	const px = y * size + x * size;
 	const py = y * size - x * size;
@@ -140,20 +61,8 @@ function DrawRotatedRectangle (ctx: CanvasRenderingContext2D, cell: string, x: n
 		text: "#000000",
 	};
 
-	if (cell === "n") { // 빈 칸
-		ctx.save();
-		ctx.translate(size + px, xSize + py);
-
-		ctx.fillStyle = "#a6a6a6";
-		ctx.textAlign = "center";
-
-		ctx.font = "11px bold SpoqaHanSans";
-		ctx.textBaseline = "bottom";
-		ctx.fillText(`${BuildAlphabetKey(y)}${x + 1}`, size, size - 10);
-
-		ctx.restore();
+	if (cell === "n")  // 빈 칸
 		return;
-	}
 
 	if (cell === "b")
 		color = { bg: "#878787", text: "#FFFFFF" }; // gray
@@ -173,7 +82,7 @@ function DrawRotatedRectangle (ctx: CanvasRenderingContext2D, cell: string, x: n
 	ctx.fillStyle = color.bg;
 
 	ctx.save();
-	ctx.translate(size + px, xSize + py);
+	ctx.translate(px, xSize + py);
 	ctx.beginPath();
 	ctx.moveTo(0, 0);
 	ctx.lineTo(size, -size);
@@ -181,17 +90,6 @@ function DrawRotatedRectangle (ctx: CanvasRenderingContext2D, cell: string, x: n
 	ctx.lineTo(size, size);
 	ctx.lineTo(0, 0);
 	ctx.fill();
-
-	ctx.fillStyle = color.text;
-	ctx.textAlign = "center";
-
-	ctx.font = "11px bold SpoqaHanSans";
-	ctx.textBaseline = "bottom";
-	ctx.fillText(`${BuildAlphabetKey(y)}${x + 1}`, size, size - 10);
-
-	ctx.font = "14px bold SpoqaHanSans";
-	ctx.textBaseline = "middle";
-	ctx.fillText(ConvertName(cell), size, 0);
 	ctx.restore();
 }
 
@@ -199,13 +97,12 @@ function DrawNodeImage (ctx: CanvasRenderingContext2D, cell: string, x: number, 
 	// 0,0 => 좌측
 	const size = Math.sqrt(Math.pow(60, 2) / 2);
 	const xSize = Math.sqrt(Math.pow(w * 60, 2) / 2);
-	const ySize = Math.sqrt(Math.pow(h * 60, 2) / 2);
 
 	const px = y * size + x * size;
 	const py = y * size - x * size;
 
 	ctx.save();
-	ctx.translate(size + px + (size * 2) / 2 - 30, xSize + py - size + 4);
+	ctx.translate(size + px - 30, xSize + py - size + 4);
 
 	// case "n": // 도달 불가
 	// case "b": // 빈 노드
@@ -255,7 +152,37 @@ function DrawNodeImage (ctx: CanvasRenderingContext2D, cell: string, x: number, 
 	ctx.restore();
 }
 
-const MapTable: FunctionalComponent<MapTableProps> = (props) => {
+function DrawCursor (ctx: CanvasRenderingContext2D, [x, y]: [number, number], w: number, h: number): void {
+	// 0,0 => 좌측
+	const size = Math.sqrt(Math.pow(60, 2) / 2);
+	const xSize = Math.sqrt(Math.pow(w * 60, 2) / 2);
+
+	const px = y * size + x * size;
+	const py = y * size - x * size;
+
+	ctx.lineWidth = 3;
+	ctx.strokeStyle = ctx.fillStyle = "#000";
+
+	ctx.save();
+	ctx.translate(px, xSize + py);
+	ctx.beginPath();
+
+	const gap = 2;
+	ctx.moveTo(gap, 0);
+	ctx.lineTo(size, -size + gap);
+	ctx.lineTo(size * 2 - gap , 0);
+	ctx.lineTo(size, size - gap);
+	ctx.lineTo(gap, 0);
+	ctx.stroke();
+
+	ctx.font = "30px bold SpoqaHanSans";
+	ctx.textAlign = "center";
+	ctx.textBaseline = "middle";
+	ctx.fillText("?", size, 0);
+	ctx.restore();
+}
+
+const SearchTable: FunctionalComponent<SearchTableProps> = (props) => {
 	if (!props.data) return <></>;
 
 	const { size: [mW, mH], data } = props.data;
@@ -268,7 +195,7 @@ const MapTable: FunctionalComponent<MapTableProps> = (props) => {
 			table[j][i] = data[j * mW + i];
 	}
 
-	const size = Math.sqrt(Math.pow((mW + 1) * 60, 2) / 2) + Math.sqrt(Math.pow((mH + 1) * 60, 2) / 2);
+	const size = Math.sqrt(Math.pow(mW * 60, 2) / 2) + Math.sqrt(Math.pow(mH * 60, 2) / 2);
 
 	const canvas = document.createElement("canvas");
 	if (!canvas) return <></>;
@@ -284,37 +211,19 @@ const MapTable: FunctionalComponent<MapTableProps> = (props) => {
 				ctx.imageSmoothingEnabled = true;
 				ctx.clearRect(0, 0, size, size);
 
-				ctx.textBaseline = "top";
-				ctx.font = "14px sans-serif";
-				props.meta.split("\n")
-					.forEach((row, i) => {
-						ctx.fillStyle = "#FFF";
-						ctx.fillText(row, 9, 9 + i * 20);
-						ctx.fillText(row, 10, 9 + i * 20);
-						ctx.fillText(row, 11, 9 + i * 20);
-						ctx.fillText(row, 9, 10 + i * 20);
-						ctx.fillText(row, 11, 10 + i * 20);
-						ctx.fillText(row, 9, 11 + i * 20);
-						ctx.fillText(row, 10, 11 + i * 20);
-						ctx.fillText(row, 11, 11 + i * 20);
-
-						ctx.fillStyle = "#000";
-						ctx.fillText(row, 10, 10 + i * 20);
-					});
-
 				{ // Grid background
 					const size = Math.sqrt(Math.pow(60, 2) / 2);
 					const xSize = Math.sqrt(Math.pow(mW * 60, 2) / 2);
 
 					ctx.fillStyle = "#FFF";
 					ctx.save();
-					ctx.translate(size, xSize);
+					ctx.translate(0, xSize);
 					ctx.beginPath();
-					ctx.moveTo(-size, size); // -1 0
+					ctx.moveTo(0, 0); // -1 0
 					ctx.lineTo(mW * size, -mW * size); // w 0
-					ctx.lineTo((mH + 1) * size + mW * size, (mH + 1) * size - mW * size); // w h+1
-					ctx.lineTo((mH + 1) * size - size, (mH + 1) * size + size); // -1 h+1
-					ctx.lineTo(-size, size);
+					ctx.lineTo(mH * size + mW * size, mH * size - mW * size); // w h
+					ctx.lineTo(mH * size, mH * size); // 0 h
+					ctx.lineTo(0, 0);
 					ctx.fill();
 					ctx.restore();
 				}
@@ -332,6 +241,8 @@ const MapTable: FunctionalComponent<MapTableProps> = (props) => {
 					});
 				});
 
+				DrawCursor(ctx, props.cursor, mW, mH);
+
 				resolve(canvas.toDataURL("image/png"));
 			} // ctx
 		});
@@ -339,6 +250,10 @@ const MapTable: FunctionalComponent<MapTableProps> = (props) => {
 	}).then(x => result.set(x));
 
 	if (!result.value) return <></>;
-	return <img class={ style.MapTable } src={ result.value } />;
+	return <img
+		class={ `${style.SearchTable} ${props.class || ""}` }
+		src={ result.value }
+		onClick={ props.onClick }
+	/>;
 };
-export default MapTable;
+export default SearchTable;

@@ -21,6 +21,30 @@ export function Extend (): void {
 	}
 }
 
+export function groupBy<K extends keyof any, T> (data: T[], selector: (value: T, index: number) => K): Record<K, T[]>;
+export function groupBy<K extends keyof any, T> (data: Record<K, T>, selector: (value: T, index: K) => K): Record<K, T[]>;
+export function groupBy<K extends keyof any, T> (
+	data: T[] | Record<K, T>,
+	selector: ((value: T, index: number) => K) | ((value: T, index: string) => K),
+): Record<K, T[]> {
+	const ret = {} as Record<K, T[]>;
+	if (Array.isArray(data)) {
+		data.forEach((v, i) => {
+			const key = (selector as (value: T, index: number) => K)(v, i);
+			if (!(key in ret)) ret[key] = [];
+			ret[key].push(v);
+		});
+	} else {
+		(Object.keys(data) as K[])
+			.forEach(k => {
+				const key = (selector as (value: T, index: K) => K)(data[k], k);
+				if (!(key in ret)) ret[key] = [];
+				ret[key].push(data[k]);
+			});
+	}
+	return ret;
+}
+
 const alphabetTable = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 export function BuildAlphabetKey (index: number): string {
 	const list: string[] = [];
