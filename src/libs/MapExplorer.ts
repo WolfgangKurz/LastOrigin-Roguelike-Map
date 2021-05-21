@@ -107,7 +107,13 @@ export default class MapExplorer {
 					return false;
 				}
 
-				if (el.data[index].startsWith(cell) || cell === "?") continue;
+				if (cell === "?") continue;
+
+				if (cell === "b") {
+					if (/^[bT]+$/.test(cell)) continue;
+					return false;
+				}
+				if (new RegExp(cell).test(el.data[index])) continue;
 				return false;
 			}
 		}

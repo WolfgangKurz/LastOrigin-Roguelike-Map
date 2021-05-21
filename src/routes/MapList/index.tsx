@@ -54,6 +54,7 @@ const MapList: FunctionalComponent<MapListProps> = (props) => {
 								disabled={ selectedMapIndex.value <= 0 }
 								onClick={ (e): void => {
 									e.preventDefault();
+									route(`/list/${props.floorId}/${selectedMapIndex.value - 1}`);
 									selectedMapIndex.set(selectedMapIndex.value - 1);
 								} }
 							>◀</button>
@@ -73,6 +74,7 @@ const MapList: FunctionalComponent<MapListProps> = (props) => {
 								disabled={ selectedMapIndex.value >= data.length - 1 }
 								onClick={ (e): void => {
 									e.preventDefault();
+									route(`/list/${props.floorId}/${selectedMapIndex.value + 1}`);
 									selectedMapIndex.set(selectedMapIndex.value + 1);
 								} }
 							>▶</button>

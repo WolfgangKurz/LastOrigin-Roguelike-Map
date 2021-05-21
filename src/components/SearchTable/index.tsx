@@ -1,11 +1,10 @@
 import { FunctionalComponent } from "preact";
-import { useRef } from "preact/hooks";
 
 import { RogueMap } from "@/types/Map";
-import { BuildAlphabetKey } from "@/libs/Functions";
+
+import { objState } from "@/libs/State";
 
 import style from "./style.scss";
-import { objState } from "@/libs/State";
 
 interface SearchTableProps {
 	class?: string;
@@ -64,20 +63,20 @@ function DrawRotatedRectangle (ctx: CanvasRenderingContext2D, cell: string, x: n
 	if (cell === "n")  // 빈 칸
 		return;
 
-	if (cell === "b")
-		color = { bg: "#878787", text: "#FFFFFF" }; // gray
-	else if (/^[so]/.test(cell))
+	if (/[so]/.test(cell))
 		color = { bg: "#0d6efd", text: "#FFFFFF" }; // primary
-	else if (/^[qBSare]/.test(cell))
+	else if (/[qBSare]/.test(cell))
 		color = { bg: "#198754", text: "#FFFFFF" }; // success
-	else if (/^[mMT]/.test(cell))
+	else if (/[mMT]/.test(cell))
 		color = { bg: "#dc3545", text: "#FFFFFF" }; // danger
-	else if (/^[dp]/.test(cell))
+	else if (/[dp]/.test(cell))
 		color = { bg: "#6e196e", text: "#FFFFFF" }; // dark-alt
-	else if (/^[tfil]/.test(cell))
+	else if (/[tfil]/.test(cell))
 		color = { bg: "#212529", text: "#FFFFFF" }; // dark
-	else if (/^[hk]/.test(cell))
+	else if (/[hk]/.test(cell))
 		color = { bg: "#ffc107", text: "#000000" }; // warning
+	else if (/b/.test(cell))
+		color = { bg: "#878787", text: "#FFFFFF" }; // gray
 
 	ctx.fillStyle = color.bg;
 
@@ -90,6 +89,15 @@ function DrawRotatedRectangle (ctx: CanvasRenderingContext2D, cell: string, x: n
 	ctx.lineTo(size, size);
 	ctx.lineTo(0, 0);
 	ctx.fill();
+
+	if (/s/.test(cell)) {
+		ctx.fillStyle = color.text;
+		ctx.textAlign = "center";
+
+		ctx.font = "14px bold SpoqaHanSans";
+		ctx.textBaseline = "middle";
+		ctx.fillText("시작", size, 0);
+	}
 	ctx.restore();
 }
 
@@ -108,46 +116,47 @@ function DrawNodeImage (ctx: CanvasRenderingContext2D, cell: string, x: number, 
 	// case "b": // 빈 노드
 
 	// case "s": // 시작 노드
-	if (/^o/.test(cell)) // 관측소
+	if (/o/.test(cell)) // 관측소
 		ctx.drawImage(sprite, 0, 128, 64, 64, 0, 0, 60, 60);
 
-	else if (/^q/.test(cell)) // 퀘스트
+	else if (/q/.test(cell)) // 퀘스트
 		ctx.drawImage(sprite, 64, 128, 64, 64, 0, 0, 60, 60);
-	else if (/^B/.test(cell)) // 컨테이너
+	else if (/B/.test(cell)) // 컨테이너
 		ctx.drawImage(sprite, 192, 0, 64, 64, 0, 0, 60, 60);
-	else if (/^S/.test(cell)) // 상점
+	else if (/S/.test(cell)) // 상점
 		ctx.drawImage(sprite, 192, 192, 64, 64, 0, 0, 60, 60);
-	else if (/^a/.test(cell)) // 아군 획득
+	else if (/a/.test(cell)) // 아군 획득
 		ctx.drawImage(sprite, 0, 0, 64, 64, 0, 0, 60, 60);
-	else if (/^r/.test(cell)) // 회복 스테이션
+	else if (/r/.test(cell)) // 회복 스테이션
 		ctx.drawImage(sprite, 128, 192, 64, 64, 0, 0, 60, 60);
-	else if (/^e/.test(cell)) // 군수 공장
+	else if (/e/.test(cell)) // 군수 공장
 		ctx.drawImage(sprite, 64, 0, 64, 64, 0, 0, 60, 60);
 
-	else if (/^m/.test(cell)) // 경비대
+	else if (/m/.test(cell)) // 경비대
 		ctx.drawImage(sprite, 128, 64, 64, 64, 0, 0, 60, 60);
-	else if (/^M/.test(cell)) // 문지기
+	else if (/M/.test(cell)) // 문지기
 		ctx.drawImage(sprite, 192, 64, 64, 64, 0, 0, 60, 60);
-	else if (/^T/.test(cell)) // 추적자
-		ctx.drawImage(sprite, 256, 64, 41, 40, 10, 10, 41, 40);
 
-	else if (/^d/.test(cell)) // 혼돈 엔트로피
+	else if (/d/.test(cell)) // 혼돈 엔트로피
 		ctx.drawImage(sprite, 192, 128, 64, 64, 0, 0, 60, 60);
-	else if (/^p/.test(cell)) // 고준위 방사능
+	else if (/p/.test(cell)) // 고준위 방사능
 		ctx.drawImage(sprite, 64, 192, 64, 64, 0, 0, 60, 60);
-	else if (/^t/.test(cell)) // 지뢰 지대
+	else if (/t/.test(cell)) // 지뢰 지대
 		ctx.drawImage(sprite, 128, 128, 64, 64, 0, 0, 60, 60);
-	else if (/^f/.test(cell)) // 소이탄 저장고
+	else if (/f/.test(cell)) // 소이탄 저장고
 		ctx.drawImage(sprite, 0, 192, 64, 64, 0, 0, 60, 60);
-	else if (/^i/.test(cell)) // 냉매 보관소
+	else if (/i/.test(cell)) // 냉매 보관소
 		ctx.drawImage(sprite, 128, 0, 64, 64, 0, 0, 60, 60);
-	else if (/^l/.test(cell)) // 고전류 발전시설
+	else if (/l/.test(cell)) // 고전류 발전시설
 		ctx.drawImage(sprite, 0, 64, 64, 64, 0, 0, 60, 60);
 
-	else if (/^h/.test(cell)) // 공기 정화 시설
+	else if (/h/.test(cell)) // 공기 정화 시설
 		ctx.drawImage(sprite, 256, 0, 64, 64, 0, 0, 60, 60);
-	else if (/^k/.test(cell)) // PECS키
+	else if (/k/.test(cell)) // PECS키
 		ctx.drawImage(sprite, 64, 64, 64, 64, 0, 0, 60, 60);
+
+	if (/T/.test(cell)) // 추적자
+		ctx.drawImage(sprite, 256, 64, 41, 40, 12, 0, 34, 34);
 
 	ctx.restore();
 }
@@ -170,7 +179,7 @@ function DrawCursor (ctx: CanvasRenderingContext2D, [x, y]: [number, number], w:
 	const gap = 2;
 	ctx.moveTo(gap, 0);
 	ctx.lineTo(size, -size + gap);
-	ctx.lineTo(size * 2 - gap , 0);
+	ctx.lineTo(size * 2 - gap, 0);
 	ctx.lineTo(size, size - gap);
 	ctx.lineTo(gap, 0);
 	ctx.stroke();
@@ -203,57 +212,64 @@ const SearchTable: FunctionalComponent<SearchTableProps> = (props) => {
 	canvas.width = size;
 	canvas.height = size;
 
-	new Promise<string>((resolve) => {
-		const sprite = new Image();
-		sprite.addEventListener("load", () => {
-			const ctx = canvas.getContext("2d");
-			if (ctx) {
-				ctx.imageSmoothingEnabled = true;
-				ctx.clearRect(0, 0, size, size);
+	if (!result.value) {
+		new Promise<string>((resolve) => {
+			const sprite = new Image();
+			sprite.addEventListener("load", () => {
+				const ctx = canvas.getContext("2d");
+				if (ctx) {
+					ctx.imageSmoothingEnabled = true;
+					ctx.clearRect(0, 0, size, size);
 
-				{ // Grid background
-					const size = Math.sqrt(Math.pow(60, 2) / 2);
-					const xSize = Math.sqrt(Math.pow(mW * 60, 2) / 2);
+					{ // Grid background
+						const size = Math.sqrt(Math.pow(60, 2) / 2);
+						const xSize = Math.sqrt(Math.pow(mW * 60, 2) / 2);
 
-					ctx.fillStyle = "#FFF";
-					ctx.save();
-					ctx.translate(0, xSize);
-					ctx.beginPath();
-					ctx.moveTo(0, 0); // -1 0
-					ctx.lineTo(mW * size, -mW * size); // w 0
-					ctx.lineTo(mH * size + mW * size, mH * size - mW * size); // w h
-					ctx.lineTo(mH * size, mH * size); // 0 h
-					ctx.lineTo(0, 0);
-					ctx.fill();
-					ctx.restore();
-				}
+						ctx.fillStyle = "#FFF";
+						ctx.save();
+						ctx.translate(0, xSize);
+						ctx.beginPath();
+						ctx.moveTo(0, 0); // -1 0
+						ctx.lineTo(mW * size, -mW * size); // w 0
+						ctx.lineTo(mH * size + mW * size, mH * size - mW * size); // w h
+						ctx.lineTo(mH * size, mH * size); // 0 h
+						ctx.lineTo(0, 0);
+						ctx.fill();
+						ctx.restore();
+					}
 
-				table.forEach((row, y) => {
-					row.forEach((col, x) => {
-						DrawRotatedRectangle(ctx, col, x, y, mW, mH);
+					table.forEach((row, y) => {
+						row.forEach((col, x) => {
+							DrawRotatedRectangle(ctx, col, x, y, mW, mH);
+						});
 					});
-				});
-				DrawGrid(ctx, mW, mH);
+					DrawGrid(ctx, mW, mH);
 
-				table.forEach((row, y) => {
-					row.forEach((col, x) => {
-						DrawNodeImage(ctx, col, x, y, mW, mH, sprite);
+					table.forEach((row, y) => {
+						row.forEach((col, x) => {
+							DrawNodeImage(ctx, col, x, y, mW, mH, sprite);
+						});
 					});
-				});
 
-				DrawCursor(ctx, props.cursor, mW, mH);
+					DrawCursor(ctx, props.cursor, mW, mH);
 
-				resolve(canvas.toDataURL("image/png"));
-			} // ctx
-		});
-		sprite.src = "/assets/icons/sprite.png";
-	}).then(x => result.set(x));
+					canvas.toBlob((blob) => {
+						const url = URL.createObjectURL(blob);
+						resolve(url);
+					});
+				} // ctx
+			});
+			sprite.src = "/assets/icons/sprite.png";
+		}).then(x => result.set(x));
 
-	if (!result.value) return <></>;
+		return <></>;
+	}
+
 	return <img
 		class={ `${style.SearchTable} ${props.class || ""}` }
 		src={ result.value }
 		onClick={ props.onClick }
+		onLoad={ (): void => URL.revokeObjectURL(result.value) }
 	/>;
 };
 export default SearchTable;

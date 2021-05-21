@@ -98,7 +98,7 @@ const Search: FunctionalComponent = () => {
 									<h3 class="mb-2">시작 위치의 모양은?</h3>
 									<div>시작 위치의 모양을 선택해주세요.</div>
 
-									<div class="row row-cols-1 row-cols-md-3 mt-5">
+									<div class="row row-cols-4 justify-content-center mt-5">
 										{ candidates.map(c => {
 											const parts = c.split(",");
 											const data = "nnnnsnnnn".split("");
@@ -139,7 +139,7 @@ const Search: FunctionalComponent = () => {
 										? <>
 											<div>이동할 위치를 선택해주세요.</div>
 
-											<div class="row row-cols-1 row-cols-md-3 mt-5">
+											<div class="row row-cols-4 justify-content-center mt-5">
 												{ explorer.available.map(d => {
 													const data = explorer.get;
 													const pos = explorer.relativePos(data);
@@ -247,7 +247,11 @@ const Search: FunctionalComponent = () => {
 												target="_blank"
 												rel="noreferrer"
 											>
-												<SearchTable data={ x } cursor={ [-2, -2] } />
+												<SearchTable
+													key={ `search-table-candidate-${targetFloor.value}-${x.index}` }
+													data={ x }
+													cursor={ [-2, -2] }
+												/>
 												<div class="mb-4">
 													<span class="badge bg-dark">
 														{ targetFloor.value }-{ BuildAlphabetKey(x.index) }
@@ -265,11 +269,11 @@ const Search: FunctionalComponent = () => {
 								<h3 class="mb-2">검색 결과</h3>
 								<div class="my-2">
 									<button
-										class="btn btn-primary"
+										class="btn btn-primary mx-1"
 										onClick={ (e): void => {
 											e.preventDefault();
 
-											currentStep.set(0);
+											currentStep.set(1);
 
 											targetFloor.set(0);
 											targetStart.set("");
@@ -277,7 +281,20 @@ const Search: FunctionalComponent = () => {
 											targetList.set([]);
 											explorerObj.set(new MapExplorer());
 										} }
-									>처음으로</button>
+									>층 선택으로</button>
+									<button
+										class="btn btn-primary mx-1"
+										onClick={ (e): void => {
+											e.preventDefault();
+
+											currentStep.set(2);
+
+											targetStart.set("");
+
+											targetList.set([]);
+											explorerObj.set(new MapExplorer());
+										} }
+									>같은 층 시작 선택으로</button>
 								</div>
 
 								{ targetList.value.length === 0

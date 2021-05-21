@@ -23,46 +23,46 @@ function ConvertName (cell: string): string {
 		case "s":
 			return "시작";
 		default:
-			if (/^q[0-9]$/.test(cell))
+			if (/q[0-9]$/.test(cell))
 				return ""; // "퀘스트";
 
-			else if (/^m[0-9a-z]$/.test(cell))
+			else if (/m[0-9a-z]$/.test(cell))
 				return ""; // "경비대";
-			else if (/^M[0-9a-z]$/.test(cell))
+			else if (/M[0-9a-z]$/.test(cell))
 				return ""; // "문지기";
 
-			else if (/^B[0-9]$/.test(cell))
+			else if (/B[0-9]$/.test(cell))
 				return ""; // "컨테이너";
 
-			else if (/^f[0-9]$/.test(cell))
+			else if (/f[0-9]$/.test(cell))
 				return ""; // "소이탄 저장고";
-			else if (/^i[0-9]$/.test(cell))
+			else if (/i[0-9]$/.test(cell))
 				return ""; // "냉매 보관소";
-			else if (/^l[0-9]$/.test(cell))
+			else if (/l[0-9]$/.test(cell))
 				return ""; // "고전류 발전 시설";
 
-			else if (/^d[0-9]$/.test(cell))
+			else if (/d[0-9]$/.test(cell))
 				return ""; // "혼돈 엔트로피";
-			else if (/^p[0-9]$/.test(cell))
+			else if (/p[0-9]$/.test(cell))
 				return ""; // "고준위 방사능";
-			else if (/^t[0-9]$/.test(cell))
+			else if (/t[0-9]$/.test(cell))
 				return ""; // "지뢰 지대";
 
-			else if (/^S[0-9a-z]$/.test(cell))
+			else if (/S[0-9a-z]$/.test(cell))
 				return ""; // "상점";
-			else if (/^a[0-9]$/.test(cell))
+			else if (/a[0-9]$/.test(cell))
 				return ""; // "아군";
-			else if (/^k[0-9]$/.test(cell))
+			else if (/k[0-9]$/.test(cell))
 				return ""; // "PECS키";
-			else if (/^h[0-9]$/.test(cell))
+			else if (/h[0-9]$/.test(cell))
 				return ""; // "공기 정화 시설";
-			else if (/^o[0-9]$/.test(cell))
+			else if (/o[0-9]$/.test(cell))
 				return ""; // "관측소";
-			else if (/^r[0-9]$/.test(cell))
+			else if (/r[0-9]$/.test(cell))
 				return ""; // "회복";
-			else if (/^e[0-9]$/.test(cell))
+			else if (/e[0-9]$/.test(cell))
 				return ""; // "군수 공장";
-			else if (/^T[0-9a-z]$/.test(cell))
+			else if (/T[0-9a-z]$/.test(cell))
 				return ""; // "추적자";
 	}
 	return cell;
@@ -155,20 +155,20 @@ function DrawRotatedRectangle (ctx: CanvasRenderingContext2D, cell: string, x: n
 		return;
 	}
 
-	if (cell === "b")
-		color = { bg: "#878787", text: "#FFFFFF" }; // gray
-	else if (/^[so]/.test(cell))
+	if (/[so]/.test(cell))
 		color = { bg: "#0d6efd", text: "#FFFFFF" }; // primary
-	else if (/^[qBSare]/.test(cell))
+	else if (/[qBSare]/.test(cell))
 		color = { bg: "#198754", text: "#FFFFFF" }; // success
-	else if (/^[mMT]/.test(cell))
+	else if (/[mM]/.test(cell))
 		color = { bg: "#dc3545", text: "#FFFFFF" }; // danger
-	else if (/^[dp]/.test(cell))
+	else if (/[dp]/.test(cell))
 		color = { bg: "#6e196e", text: "#FFFFFF" }; // dark-alt
-	else if (/^[tfil]/.test(cell))
+	else if (/[tfil]/.test(cell))
 		color = { bg: "#212529", text: "#FFFFFF" }; // dark
-	else if (/^[hk]/.test(cell))
+	else if (/[hk]/.test(cell))
 		color = { bg: "#ffc107", text: "#000000" }; // warning
+	else if (/b/.test(cell))
+		color = { bg: "#878787", text: "#FFFFFF" }; // gray
 
 	ctx.fillStyle = color.bg;
 
@@ -211,46 +211,47 @@ function DrawNodeImage (ctx: CanvasRenderingContext2D, cell: string, x: number, 
 	// case "b": // 빈 노드
 
 	// case "s": // 시작 노드
-	if (/^o/.test(cell)) // 관측소
+	if (/o/.test(cell)) // 관측소
 		ctx.drawImage(sprite, 0, 128, 64, 64, 0, 0, 60, 60);
 
-	else if (/^q/.test(cell)) // 퀘스트
+	else if (/q/.test(cell)) // 퀘스트
 		ctx.drawImage(sprite, 64, 128, 64, 64, 0, 0, 60, 60);
-	else if (/^B/.test(cell)) // 컨테이너
+	else if (/B/.test(cell)) // 컨테이너
 		ctx.drawImage(sprite, 192, 0, 64, 64, 0, 0, 60, 60);
-	else if (/^S/.test(cell)) // 상점
+	else if (/S/.test(cell)) // 상점
 		ctx.drawImage(sprite, 192, 192, 64, 64, 0, 0, 60, 60);
-	else if (/^a/.test(cell)) // 아군 획득
+	else if (/a/.test(cell)) // 아군 획득
 		ctx.drawImage(sprite, 0, 0, 64, 64, 0, 0, 60, 60);
-	else if (/^r/.test(cell)) // 회복 스테이션
+	else if (/r/.test(cell)) // 회복 스테이션
 		ctx.drawImage(sprite, 128, 192, 64, 64, 0, 0, 60, 60);
-	else if (/^e/.test(cell)) // 군수 공장
+	else if (/e/.test(cell)) // 군수 공장
 		ctx.drawImage(sprite, 64, 0, 64, 64, 0, 0, 60, 60);
 
-	else if (/^m/.test(cell)) // 경비대
+	else if (/m/.test(cell)) // 경비대
 		ctx.drawImage(sprite, 128, 64, 64, 64, 0, 0, 60, 60);
-	else if (/^M/.test(cell)) // 문지기
+	else if (/M/.test(cell)) // 문지기
 		ctx.drawImage(sprite, 192, 64, 64, 64, 0, 0, 60, 60);
-	else if (/^T/.test(cell)) // 추적자
-		ctx.drawImage(sprite, 256, 64, 41, 40, 10, 10, 41, 40);
 
-	else if (/^d/.test(cell)) // 혼돈 엔트로피
+	else if (/d/.test(cell)) // 혼돈 엔트로피
 		ctx.drawImage(sprite, 192, 128, 64, 64, 0, 0, 60, 60);
-	else if (/^p/.test(cell)) // 고준위 방사능
+	else if (/p/.test(cell)) // 고준위 방사능
 		ctx.drawImage(sprite, 64, 192, 64, 64, 0, 0, 60, 60);
-	else if (/^t/.test(cell)) // 지뢰 지대
+	else if (/t/.test(cell)) // 지뢰 지대
 		ctx.drawImage(sprite, 128, 128, 64, 64, 0, 0, 60, 60);
-	else if (/^f/.test(cell)) // 소이탄 저장고
+	else if (/f/.test(cell)) // 소이탄 저장고
 		ctx.drawImage(sprite, 0, 192, 64, 64, 0, 0, 60, 60);
-	else if (/^i/.test(cell)) // 냉매 보관소
+	else if (/i/.test(cell)) // 냉매 보관소
 		ctx.drawImage(sprite, 128, 0, 64, 64, 0, 0, 60, 60);
-	else if (/^l/.test(cell)) // 고전류 발전시설
+	else if (/l/.test(cell)) // 고전류 발전시설
 		ctx.drawImage(sprite, 0, 64, 64, 64, 0, 0, 60, 60);
 
-	else if (/^h/.test(cell)) // 공기 정화 시설
+	else if (/h/.test(cell)) // 공기 정화 시설
 		ctx.drawImage(sprite, 256, 0, 64, 64, 0, 0, 60, 60);
-	else if (/^k/.test(cell)) // PECS키
+	else if (/k/.test(cell)) // PECS키
 		ctx.drawImage(sprite, 64, 64, 64, 64, 0, 0, 60, 60);
+
+	if (/T/.test(cell)) // 추적자
+		ctx.drawImage(sprite, 256, 64, 41, 40, 12, 0, 34, 34);
 
 	ctx.restore();
 }
