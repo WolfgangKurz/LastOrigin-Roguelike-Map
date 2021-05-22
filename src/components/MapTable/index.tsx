@@ -1,11 +1,12 @@
 import { FunctionalComponent } from "preact";
-import { useRef } from "preact/hooks";
 
 import { RogueMap } from "@/types/Map";
+
+import { objState } from "@/libs/State";
 import { BuildAlphabetKey } from "@/libs/Functions";
+import { hasCell, ParseCell } from "@/libs/Map";
 
 import style from "./style.scss";
-import { objState } from "@/libs/State";
 
 interface MapTableProps {
 	data: RogueMap;
@@ -18,53 +19,34 @@ interface Color {
 }
 
 function ConvertName (cell: string): string {
-	switch (cell) {
-		case "b": return "";
-		case "s":
-			return "시작";
-		default:
-			if (/q[0-9]$/.test(cell))
-				return ""; // "퀘스트";
+	const cells = ParseCell(cell);
 
-			else if (/m[0-9a-z]$/.test(cell))
-				return ""; // "경비대";
-			else if (/M[0-9a-z]$/.test(cell))
-				return ""; // "문지기";
+	if (hasCell("b", cells)) return "";
+	if (hasCell("s", cells)) return "시작";
 
-			else if (/B[0-9]$/.test(cell))
-				return ""; // "컨테이너";
+	if (hasCell("q", cells)) return ""; // "퀘스트";
 
-			else if (/f[0-9]$/.test(cell))
-				return ""; // "소이탄 저장고";
-			else if (/i[0-9]$/.test(cell))
-				return ""; // "냉매 보관소";
-			else if (/l[0-9]$/.test(cell))
-				return ""; // "고전류 발전 시설";
+	if (hasCell("m", cells)) return ""; // "경비대";
+	if (hasCell("M", cells)) return ""; // "문지기";
 
-			else if (/d[0-9]$/.test(cell))
-				return ""; // "혼돈 엔트로피";
-			else if (/p[0-9]$/.test(cell))
-				return ""; // "고준위 방사능";
-			else if (/t[0-9]$/.test(cell))
-				return ""; // "지뢰 지대";
+	if (hasCell("B", cells)) return ""; // "컨테이너";
 
-			else if (/S[0-9a-z]$/.test(cell))
-				return ""; // "상점";
-			else if (/a[0-9]$/.test(cell))
-				return ""; // "아군";
-			else if (/k[0-9]$/.test(cell))
-				return ""; // "PECS키";
-			else if (/h[0-9]$/.test(cell))
-				return ""; // "공기 정화 시설";
-			else if (/o[0-9]$/.test(cell))
-				return ""; // "관측소";
-			else if (/r[0-9]$/.test(cell))
-				return ""; // "회복";
-			else if (/e[0-9]$/.test(cell))
-				return ""; // "군수 공장";
-			else if (/T[0-9a-z]$/.test(cell))
-				return ""; // "추적자";
-	}
+	if (hasCell("f", cells)) return ""; // "소이탄 저장고";
+	if (hasCell("i", cells)) return ""; // "냉매 보관소";
+	if (hasCell("l", cells)) return ""; // "고전류 발전 시설";
+
+	if (hasCell("d", cells)) return ""; // "혼돈 엔트로피";
+	if (hasCell("p", cells)) return ""; // "고준위 방사능";
+	if (hasCell("t", cells)) return ""; // "지뢰 지대";
+
+	if (hasCell("S", cells)) return ""; // "상점";
+	if (hasCell("a", cells)) return ""; // "아군";
+	if (hasCell("k", cells)) return ""; // "PECS키";
+	if (hasCell("h", cells)) return ""; // "공기 정화 시설";
+	if (hasCell("o", cells)) return ""; // "관측소";
+	if (hasCell("r", cells)) return ""; // "회복";
+	if (hasCell("e", cells)) return ""; // "군수 공장";
+	if (hasCell("T", cells)) return ""; // "추적자";
 	return cell;
 }
 
@@ -155,19 +137,21 @@ function DrawRotatedRectangle (ctx: CanvasRenderingContext2D, cell: string, x: n
 		return;
 	}
 
-	if (/[so]/.test(cell))
+	const cells = ParseCell(cell);
+
+	if (hasCell("s,o", cells))
 		color = { bg: "#0d6efd", text: "#FFFFFF" }; // primary
-	else if (/[qBSare]/.test(cell))
+	else if (hasCell("q,B,S,a,r,e", cells))
 		color = { bg: "#198754", text: "#FFFFFF" }; // success
-	else if (/[mM]/.test(cell))
+	else if (hasCell("m,M", cells))
 		color = { bg: "#dc3545", text: "#FFFFFF" }; // danger
-	else if (/[dp]/.test(cell))
+	else if (hasCell("d,p", cells))
 		color = { bg: "#6e196e", text: "#FFFFFF" }; // dark-alt
-	else if (/[tfil]/.test(cell))
+	else if (hasCell("t,f,i,l", cells))
 		color = { bg: "#212529", text: "#FFFFFF" }; // dark
-	else if (/[hk]/.test(cell))
+	else if (hasCell("h,k", cells))
 		color = { bg: "#ffc107", text: "#000000" }; // warning
-	else if (/b/.test(cell))
+	else if (hasCell("b,T", cells))
 		color = { bg: "#878787", text: "#FFFFFF" }; // gray
 
 	ctx.fillStyle = color.bg;
@@ -207,51 +191,53 @@ function DrawNodeImage (ctx: CanvasRenderingContext2D, cell: string, x: number, 
 	ctx.save();
 	ctx.translate(size + px + (size * 2) / 2 - 30, xSize + py - size + 4);
 
+	const cells = ParseCell(cell);
+
 	// case "n": // 도달 불가
 	// case "b": // 빈 노드
 
 	// case "s": // 시작 노드
-	if (/o/.test(cell)) // 관측소
+	if (hasCell("o", cells)) // 관측소
 		ctx.drawImage(sprite, 0, 128, 64, 64, 0, 0, 60, 60);
 
-	else if (/q/.test(cell)) // 퀘스트
+	else if (hasCell("q", cells)) // 퀘스트
 		ctx.drawImage(sprite, 64, 128, 64, 64, 0, 0, 60, 60);
-	else if (/B/.test(cell)) // 컨테이너
+	else if (hasCell("B", cells)) // 컨테이너
 		ctx.drawImage(sprite, 192, 0, 64, 64, 0, 0, 60, 60);
-	else if (/S/.test(cell)) // 상점
+	else if (hasCell("S", cells)) // 상점
 		ctx.drawImage(sprite, 192, 192, 64, 64, 0, 0, 60, 60);
-	else if (/a/.test(cell)) // 아군 획득
+	else if (hasCell("a", cells)) // 아군 획득
 		ctx.drawImage(sprite, 0, 0, 64, 64, 0, 0, 60, 60);
-	else if (/r/.test(cell)) // 회복 스테이션
+	else if (hasCell("r", cells)) // 회복 스테이션
 		ctx.drawImage(sprite, 128, 192, 64, 64, 0, 0, 60, 60);
-	else if (/e/.test(cell)) // 군수 공장
+	else if (hasCell("e", cells)) // 군수 공장
 		ctx.drawImage(sprite, 64, 0, 64, 64, 0, 0, 60, 60);
 
-	else if (/m/.test(cell)) // 경비대
+	else if (hasCell("m", cells)) // 경비대
 		ctx.drawImage(sprite, 128, 64, 64, 64, 0, 0, 60, 60);
-	else if (/M/.test(cell)) // 문지기
+	else if (hasCell("M", cells)) // 문지기
 		ctx.drawImage(sprite, 192, 64, 64, 64, 0, 0, 60, 60);
 
-	else if (/d/.test(cell)) // 혼돈 엔트로피
+	else if (hasCell("d", cells)) // 혼돈 엔트로피
 		ctx.drawImage(sprite, 192, 128, 64, 64, 0, 0, 60, 60);
-	else if (/p/.test(cell)) // 고준위 방사능
+	else if (hasCell("p", cells)) // 고준위 방사능
 		ctx.drawImage(sprite, 64, 192, 64, 64, 0, 0, 60, 60);
-	else if (/t/.test(cell)) // 지뢰 지대
+	else if (hasCell("t", cells)) // 지뢰 지대
 		ctx.drawImage(sprite, 128, 128, 64, 64, 0, 0, 60, 60);
-	else if (/f/.test(cell)) // 소이탄 저장고
+	else if (hasCell("f", cells)) // 소이탄 저장고
 		ctx.drawImage(sprite, 0, 192, 64, 64, 0, 0, 60, 60);
-	else if (/i/.test(cell)) // 냉매 보관소
+	else if (hasCell("i", cells)) // 냉매 보관소
 		ctx.drawImage(sprite, 128, 0, 64, 64, 0, 0, 60, 60);
-	else if (/l/.test(cell)) // 고전류 발전시설
+	else if (hasCell("l", cells)) // 고전류 발전시설
 		ctx.drawImage(sprite, 0, 64, 64, 64, 0, 0, 60, 60);
 
-	else if (/h/.test(cell)) // 공기 정화 시설
+	else if (hasCell("h", cells)) // 공기 정화 시설
 		ctx.drawImage(sprite, 256, 0, 64, 64, 0, 0, 60, 60);
-	else if (/k/.test(cell)) // PECS키
+	else if (hasCell("k", cells)) // PECS키
 		ctx.drawImage(sprite, 64, 64, 64, 64, 0, 0, 60, 60);
 
-	if (/T/.test(cell)) // 추적자
-		ctx.drawImage(sprite, 256, 64, 41, 40, 12, 0, 34, 34);
+	else if (hasCell("T", cells)) // 추적자
+		ctx.drawImage(sprite, 256, 64, 41, 40, 10, 10, 41, 40);
 
 	ctx.restore();
 }
@@ -277,69 +263,78 @@ const MapTable: FunctionalComponent<MapTableProps> = (props) => {
 	canvas.width = size;
 	canvas.height = size;
 
-	new Promise<string>((resolve) => {
-		const sprite = new Image();
-		sprite.addEventListener("load", () => {
-			const ctx = canvas.getContext("2d");
-			if (ctx) {
-				ctx.imageSmoothingEnabled = true;
-				ctx.clearRect(0, 0, size, size);
+	if (!result.value) {
+		new Promise<string>((resolve) => {
+			const sprite = new Image();
+			sprite.addEventListener("load", () => {
+				const ctx = canvas.getContext("2d");
+				if (ctx) {
+					ctx.imageSmoothingEnabled = true;
+					ctx.clearRect(0, 0, size, size);
 
-				ctx.textBaseline = "top";
-				ctx.font = "14px sans-serif";
-				props.meta.split("\n")
-					.forEach((row, i) => {
+					ctx.textBaseline = "top";
+					ctx.font = "14px sans-serif";
+					props.meta.split("\n")
+						.forEach((row, i) => {
+							ctx.fillStyle = "#FFF";
+							ctx.fillText(row, 9, 9 + i * 20);
+							ctx.fillText(row, 10, 9 + i * 20);
+							ctx.fillText(row, 11, 9 + i * 20);
+							ctx.fillText(row, 9, 10 + i * 20);
+							ctx.fillText(row, 11, 10 + i * 20);
+							ctx.fillText(row, 9, 11 + i * 20);
+							ctx.fillText(row, 10, 11 + i * 20);
+							ctx.fillText(row, 11, 11 + i * 20);
+
+							ctx.fillStyle = "#000";
+							ctx.fillText(row, 10, 10 + i * 20);
+						});
+
+					{ // Grid background
+						const size = Math.sqrt(Math.pow(60, 2) / 2);
+						const xSize = Math.sqrt(Math.pow(mW * 60, 2) / 2);
+
 						ctx.fillStyle = "#FFF";
-						ctx.fillText(row, 9, 9 + i * 20);
-						ctx.fillText(row, 10, 9 + i * 20);
-						ctx.fillText(row, 11, 9 + i * 20);
-						ctx.fillText(row, 9, 10 + i * 20);
-						ctx.fillText(row, 11, 10 + i * 20);
-						ctx.fillText(row, 9, 11 + i * 20);
-						ctx.fillText(row, 10, 11 + i * 20);
-						ctx.fillText(row, 11, 11 + i * 20);
+						ctx.save();
+						ctx.translate(size, xSize);
+						ctx.beginPath();
+						ctx.moveTo(-size, size); // -1 0
+						ctx.lineTo(mW * size, -mW * size); // w 0
+						ctx.lineTo((mH + 1) * size + mW * size, (mH + 1) * size - mW * size); // w h+1
+						ctx.lineTo((mH + 1) * size - size, (mH + 1) * size + size); // -1 h+1
+						ctx.lineTo(-size, size);
+						ctx.fill();
+						ctx.restore();
+					}
 
-						ctx.fillStyle = "#000";
-						ctx.fillText(row, 10, 10 + i * 20);
+					table.forEach((row, y) => {
+						row.forEach((col, x) => {
+							DrawRotatedRectangle(ctx, col, x, y, mW, mH);
+						});
+					});
+					DrawGrid(ctx, mW, mH);
+
+					table.forEach((row, y) => {
+						row.forEach((col, x) => {
+							DrawNodeImage(ctx, col, x, y, mW, mH, sprite);
+						});
 					});
 
-				{ // Grid background
-					const size = Math.sqrt(Math.pow(60, 2) / 2);
-					const xSize = Math.sqrt(Math.pow(mW * 60, 2) / 2);
-
-					ctx.fillStyle = "#FFF";
-					ctx.save();
-					ctx.translate(size, xSize);
-					ctx.beginPath();
-					ctx.moveTo(-size, size); // -1 0
-					ctx.lineTo(mW * size, -mW * size); // w 0
-					ctx.lineTo((mH + 1) * size + mW * size, (mH + 1) * size - mW * size); // w h+1
-					ctx.lineTo((mH + 1) * size - size, (mH + 1) * size + size); // -1 h+1
-					ctx.lineTo(-size, size);
-					ctx.fill();
-					ctx.restore();
-				}
-
-				table.forEach((row, y) => {
-					row.forEach((col, x) => {
-						DrawRotatedRectangle(ctx, col, x, y, mW, mH);
+					canvas.toBlob((blob) => {
+						const url = URL.createObjectURL(blob);
+						resolve(url);
 					});
-				});
-				DrawGrid(ctx, mW, mH);
-
-				table.forEach((row, y) => {
-					row.forEach((col, x) => {
-						DrawNodeImage(ctx, col, x, y, mW, mH, sprite);
-					});
-				});
-
-				resolve(canvas.toDataURL("image/png"));
-			} // ctx
-		});
-		sprite.src = "/assets/icons/sprite.png";
-	}).then(x => result.set(x));
+				} // ctx
+			});
+			sprite.src = "/assets/icons/sprite.png";
+		}).then(x => result.set(x));
+	}
 
 	if (!result.value) return <></>;
-	return <img class={ style.MapTable } src={ result.value } />;
+	return <img
+		class={ style.MapTable }
+		src={ result.value }
+		onLoad={ (): void => URL.revokeObjectURL(result.value) }
+	/>;
 };
 export default MapTable;

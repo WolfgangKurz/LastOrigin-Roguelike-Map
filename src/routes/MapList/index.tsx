@@ -61,6 +61,7 @@ const MapList: FunctionalComponent<MapListProps> = (props) => {
 
 							<div class={ style.MapCell }>
 								<MapTable
+									key={ `map-list-${props.floorId}-${selectedMapIndex.value}` }
 									data={ data[selectedMapIndex.value] }
 									meta={ [
 										`${props.floorId}층 - ${BuildAlphabetKey(selectedMapIndex.value)}`,

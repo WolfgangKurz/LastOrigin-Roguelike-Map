@@ -1,4 +1,5 @@
 import { RogueMap } from "@/types/Map";
+import { hasCell, normalizeCell, ParseCell } from "./Map";
 
 export default class MapExplorer {
 	private data: Record<number, Record<number, string>> = {};
@@ -99,21 +100,26 @@ export default class MapExplorer {
 				const dix = parseInt(dx, 10);
 				const diy = parseInt(dy, 10);
 				const cell = this.data[dy][dx];
-
-				const index = (diy + y) * el.size[0] + (dix + x);
-
-				if (el.data[index] === "n") {
+				if (dix + x < 0 || diy + y < 0 || dix + x >= _w || diy + y >= _h) {
 					if (cell === "n") continue;
 					return false;
 				}
 
-				if (cell === "?") continue;
+				const index = (diy + y) * el.size[0] + (dix + x);
 
-				if (cell === "b") {
-					if (/^[bT]+$/.test(cell)) continue;
+				const p1 = ParseCell(cell);
+				const p2 = ParseCell(el.data[index]);
+
+				if (hasCell("?", p1) && !hasCell("n", p2)) continue; // any 타입, n 만 아니면 됨
+
+				if (hasCell("n", p1) || hasCell("n", p2)) { // n 이 있을거면 둘 다 있던가 없을거면 둘 다 없던가
+					if (hasCell("n", p1) && hasCell("n", p2)) continue;
 					return false;
 				}
-				if (new RegExp(cell).test(el.data[index])) continue;
+
+				const n1 = normalizeCell(p1).join("");
+				const n2 = normalizeCell(p2).join("");
+				if (n1 === n2) continue;
 				return false;
 			}
 		}
@@ -125,10 +131,25 @@ export default class MapExplorer {
 		this.lastMove = "";
 
 		const [x, y] = this.cursor;
-		if (parts.includes("l")) this.set(x, y - 1, "?");
-		if (parts.includes("r")) this.set(x + 1, y, "?");
-		if (parts.includes("bl")) this.set(x - 1, y, "?");
-		if (parts.includes("br")) this.set(x, y + 1, "?");
+		if (parts.includes("l"))
+			this.set(x, y - 1, "?");
+		else
+			this.set(x, y - 1, "n");
+
+		if (parts.includes("r"))
+			this.set(x + 1, y, "?");
+		else
+			this.set(x + 1, y, "n");
+
+		if (parts.includes("bl"))
+			this.set(x - 1, y, "?");
+		else
+			this.set(x - 1, y, "n");
+
+		if (parts.includes("br"))
+			this.set(x, y + 1, "?");
+		else
+			this.set(x, y + 1, "n");
 	}
 
 	public move (dir: "l" | "r" | "bl" | "br") {

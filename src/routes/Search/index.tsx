@@ -214,7 +214,7 @@ const Search: FunctionalComponent = () => {
 														.reduce((p, c) => p.includes(c) ? p : [...p, c], [] as string[])
 														.map(c => {
 															const parts = c.split(",");
-															const data = "nnnnsnnnn".split("");
+															const data = "nnnn!nnnn".split("");
 															if (parts.includes("l")) data[1] = "b";
 															if (parts.includes("r")) data[5] = "b";
 															if (parts.includes("bl")) data[3] = "b";
@@ -227,6 +227,7 @@ const Search: FunctionalComponent = () => {
 																	cursor={ [-2, -2] }
 																	onClick={ (): void => {
 																		explorer.setShape(c);
+																		refresh();
 																		targetList.set(targetList.value.filter(el => explorer.matches(el)));
 																		if (targetList.value.length <= 1)
 																			currentStep.set(4);

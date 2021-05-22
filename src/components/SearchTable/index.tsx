@@ -3,6 +3,7 @@ import { FunctionalComponent } from "preact";
 import { RogueMap } from "@/types/Map";
 
 import { objState } from "@/libs/State";
+import { ParseCell, hasCell } from "@/libs/Map";
 
 import style from "./style.scss";
 
@@ -63,19 +64,21 @@ function DrawRotatedRectangle (ctx: CanvasRenderingContext2D, cell: string, x: n
 	if (cell === "n")  // 빈 칸
 		return;
 
-	if (/[so]/.test(cell))
+	const cells = ParseCell(cell);
+
+	if (hasCell("s,o,!", cells))
 		color = { bg: "#0d6efd", text: "#FFFFFF" }; // primary
-	else if (/[qBSare]/.test(cell))
+	else if (hasCell("q,B,S,a,r,e", cells))
 		color = { bg: "#198754", text: "#FFFFFF" }; // success
-	else if (/[mMT]/.test(cell))
+	else if (hasCell("m,M", cells))
 		color = { bg: "#dc3545", text: "#FFFFFF" }; // danger
-	else if (/[dp]/.test(cell))
+	else if (hasCell("d,p", cells))
 		color = { bg: "#6e196e", text: "#FFFFFF" }; // dark-alt
-	else if (/[tfil]/.test(cell))
+	else if (hasCell("t,f,i,l", cells))
 		color = { bg: "#212529", text: "#FFFFFF" }; // dark
-	else if (/[hk]/.test(cell))
+	else if (hasCell("h,k", cells))
 		color = { bg: "#ffc107", text: "#000000" }; // warning
-	else if (/b/.test(cell))
+	else if (hasCell("b,T", cells))
 		color = { bg: "#878787", text: "#FFFFFF" }; // gray
 
 	ctx.fillStyle = color.bg;
@@ -90,7 +93,7 @@ function DrawRotatedRectangle (ctx: CanvasRenderingContext2D, cell: string, x: n
 	ctx.lineTo(0, 0);
 	ctx.fill();
 
-	if (/s/.test(cell)) {
+	if (hasCell("s", cells)) {
 		ctx.fillStyle = color.text;
 		ctx.textAlign = "center";
 
@@ -112,51 +115,53 @@ function DrawNodeImage (ctx: CanvasRenderingContext2D, cell: string, x: number, 
 	ctx.save();
 	ctx.translate(size + px - 30, xSize + py - size + 4);
 
+	const cells = ParseCell(cell);
+
 	// case "n": // 도달 불가
 	// case "b": // 빈 노드
 
 	// case "s": // 시작 노드
-	if (/o/.test(cell)) // 관측소
+	if (hasCell("o", cells)) // 관측소
 		ctx.drawImage(sprite, 0, 128, 64, 64, 0, 0, 60, 60);
 
-	else if (/q/.test(cell)) // 퀘스트
+	else if (hasCell("q", cells)) // 퀘스트
 		ctx.drawImage(sprite, 64, 128, 64, 64, 0, 0, 60, 60);
-	else if (/B/.test(cell)) // 컨테이너
+	else if (hasCell("B", cells)) // 컨테이너
 		ctx.drawImage(sprite, 192, 0, 64, 64, 0, 0, 60, 60);
-	else if (/S/.test(cell)) // 상점
+	else if (hasCell("S", cells)) // 상점
 		ctx.drawImage(sprite, 192, 192, 64, 64, 0, 0, 60, 60);
-	else if (/a/.test(cell)) // 아군 획득
+	else if (hasCell("a", cells)) // 아군 획득
 		ctx.drawImage(sprite, 0, 0, 64, 64, 0, 0, 60, 60);
-	else if (/r/.test(cell)) // 회복 스테이션
+	else if (hasCell("r", cells)) // 회복 스테이션
 		ctx.drawImage(sprite, 128, 192, 64, 64, 0, 0, 60, 60);
-	else if (/e/.test(cell)) // 군수 공장
+	else if (hasCell("e", cells)) // 군수 공장
 		ctx.drawImage(sprite, 64, 0, 64, 64, 0, 0, 60, 60);
 
-	else if (/m/.test(cell)) // 경비대
+	else if (hasCell("m", cells)) // 경비대
 		ctx.drawImage(sprite, 128, 64, 64, 64, 0, 0, 60, 60);
-	else if (/M/.test(cell)) // 문지기
+	else if (hasCell("M", cells)) // 문지기
 		ctx.drawImage(sprite, 192, 64, 64, 64, 0, 0, 60, 60);
 
-	else if (/d/.test(cell)) // 혼돈 엔트로피
+	else if (hasCell("d", cells)) // 혼돈 엔트로피
 		ctx.drawImage(sprite, 192, 128, 64, 64, 0, 0, 60, 60);
-	else if (/p/.test(cell)) // 고준위 방사능
+	else if (hasCell("p", cells)) // 고준위 방사능
 		ctx.drawImage(sprite, 64, 192, 64, 64, 0, 0, 60, 60);
-	else if (/t/.test(cell)) // 지뢰 지대
+	else if (hasCell("t", cells)) // 지뢰 지대
 		ctx.drawImage(sprite, 128, 128, 64, 64, 0, 0, 60, 60);
-	else if (/f/.test(cell)) // 소이탄 저장고
+	else if (hasCell("f", cells)) // 소이탄 저장고
 		ctx.drawImage(sprite, 0, 192, 64, 64, 0, 0, 60, 60);
-	else if (/i/.test(cell)) // 냉매 보관소
+	else if (hasCell("i", cells)) // 냉매 보관소
 		ctx.drawImage(sprite, 128, 0, 64, 64, 0, 0, 60, 60);
-	else if (/l/.test(cell)) // 고전류 발전시설
+	else if (hasCell("l", cells)) // 고전류 발전시설
 		ctx.drawImage(sprite, 0, 64, 64, 64, 0, 0, 60, 60);
 
-	else if (/h/.test(cell)) // 공기 정화 시설
+	else if (hasCell("h", cells)) // 공기 정화 시설
 		ctx.drawImage(sprite, 256, 0, 64, 64, 0, 0, 60, 60);
-	else if (/k/.test(cell)) // PECS키
+	else if (hasCell("k", cells)) // PECS키
 		ctx.drawImage(sprite, 64, 64, 64, 64, 0, 0, 60, 60);
 
-	if (/T/.test(cell)) // 추적자
-		ctx.drawImage(sprite, 256, 64, 41, 40, 12, 0, 34, 34);
+	else if (hasCell("T", cells)) // 추적자
+		ctx.drawImage(sprite, 256, 64, 41, 40, 10, 10, 41, 40);
 
 	ctx.restore();
 }
