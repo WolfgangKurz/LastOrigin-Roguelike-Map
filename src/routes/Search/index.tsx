@@ -12,6 +12,7 @@ import Step from "@/components/Step";
 import SearchTable from "@/components/SearchTable";
 
 import style from "./style.scss";
+import { hasCell, normalizeCell, ParseCell } from "@/libs/Map";
 
 interface RogueMapEx extends RogueMap {
 	index: number;
@@ -179,12 +180,16 @@ const Search: FunctionalComponent = () => {
 
 												<div class="mt-5 text-center">
 													{ nodeEntities
-														.filter(n => targetList.value.some(el => {
-															const pos = explorer.relativePos(el);
-															const w = el.size[0];
-															const idx = pos[1] * w + pos[0];
-															return el.data[idx].startsWith(n);
-														}))
+														.filter(n => {
+															const from = normalizeCell(ParseCell(n));
+															return targetList.value.some(el => {
+																const pos = explorer.relativePos(el);
+																const w = el.size[0];
+																const idx = pos[1] * w + pos[0];
+																const parsed = normalizeCell(ParseCell(el.data[idx]));
+																return parsed.join("") === from.join("");
+															});
+														})
 														.map(n => <SearchTable
 															class={ `${style.StartSelector} m-2` }
 															data={ { size: [1, 1], data: [n] } }

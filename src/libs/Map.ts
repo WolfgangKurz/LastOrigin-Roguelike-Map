@@ -62,8 +62,13 @@ export function normalizeCell (cells: string[]): string[] {
 	const ret: string[] = [];
 	cells.forEach(x => {
 		const c = x[0];
-		if (c === "T") return;
+		if (c === "T") {
+			ret.push("b");
+			return;
+		}
 		ret.push(c);
 	});
-	return ret.sort();
+	return ret
+		.reduce((p, c) => p.includes(c) ? p : [...p, c], [] as string[])
+		.sort();
 }

@@ -57,7 +57,7 @@ export default class MapExplorer {
 		const y = Math.floor(startOffset / _w);
 
 		const [cx, cy] = this.cursor;
-		console.log(cx, cy, x, y);
+		// console.log(cx, cy, x, y);
 		return [cx + x, cy + y];
 	}
 
