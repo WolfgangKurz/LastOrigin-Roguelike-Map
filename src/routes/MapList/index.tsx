@@ -18,10 +18,12 @@ interface MapListProps {
 
 const MapList: FunctionalComponent<MapListProps> = (props) => {
 	const selectedMapIndex = objState<number>(props.mapId ? SafeInteger(props.mapId) : 0);
+	const floorCount = objState<number>(0);
 
 	if (props.floorId) {
 		return <>
 			<h1>{ props.floorId }층 지도</h1>
+			<h4>총 {floorCount.value} 스테이지</h4>
 
 			<div class="mb-3 text-start">
 				<button
@@ -33,7 +35,9 @@ const MapList: FunctionalComponent<MapListProps> = (props) => {
 			</div>
 			<div class="list">
 				<Loader json={ `json/${props.floorId}` } content={ (): preact.VNode => {
-					const data = GetJson<RogueFloor>(`json/${props.floorId}`);
+					const ret = GetJson<RogueFloor>(`json/${props.floorId}`);
+					const data = ret.list;
+					floorCount.set(ret.count);
 
 					return <>
 						<div class="mb-4">
